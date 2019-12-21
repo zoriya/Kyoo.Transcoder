@@ -2,7 +2,6 @@
 // Created by Anonymus Raccoon on 16/12/2019.
 //
 
-#include "transcoder.h"
 #include "stream.h"
 #include "helper.h"
 #include "compatibility.h"
@@ -130,6 +129,8 @@ stream *extract_subtitles(char *path, const char *out_path, unsigned *stream_cou
 	*subtitle_count = 0;
 	streams = malloc(sizeof(stream) * *stream_count);
 	output_list = malloc(sizeof(AVFormatContext *) * *stream_count);
+	if (!streams || !output_list)
+		return (NULL);
 	for (unsigned int i = 0; i < *stream_count; i++) {
 		AVStream *in_stream = int_ctx->streams[i];
 
