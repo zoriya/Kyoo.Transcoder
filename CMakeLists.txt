@@ -4,15 +4,6 @@ set (PROJECT_VERSION "1.0")
 project(transcoder VERSION ${PROJECT_VERSION})
 
 include_directories(ffmpeg)
-include_directories(ffmpeg/include)
-include_directories(ffmpeg/include/libavcodec)
-include_directories(ffmpeg/include/libavdevice)
-include_directories(ffmpeg/include/libavfilter)
-include_directories(ffmpeg/include/libavformat)
-include_directories(ffmpeg/include/libavutil)
-include_directories(ffmpeg/include/libpostproc)
-include_directories(ffmpeg/include/libswresample)
-include_directories(ffmpeg/include/libswscale)
 include_directories(include)
 
 add_library(transcoder SHARED
@@ -20,11 +11,15 @@ add_library(transcoder SHARED
         src/subtitles.c)
 set_property(TARGET transcoder PROPERTY C_STANDARD 11)
 
-link_directories(${CMAKE_SOURCE_DIR}/dll)
+target_link_libraries(transcoder
+        ${CMAKE_SOURCE_DIR}/ffmpeg/libavformat/libavformat.a
+        ${CMAKE_SOURCE_DIR}/ffmpeg/libavcodec/libavcodec.a
+        ${CMAKE_SOURCE_DIR}/ffmpeg/libavutil/libavutil.a
+        ${CMAKE_SOURCE_DIR}/ffmpeg/libavdevice/libavdevice.a
+        ${CMAKE_SOURCE_DIR}/ffmpeg/libswresample/libswresample.a)
 
-
-target_link_libraries(transcoder PRIVATE
-        ${CMAKE_SOURCE_DIR}/dll/avcodec.dll
-        ${CMAKE_SOURCE_DIR}/dll/avformat.dll
-        ${CMAKE_SOURCE_DIR}/dll/avutil.dll
-        ${CMAKE_SOURCE_DIR}/dll/avdevice.dll)
+if(WIN32)
+    target_link_libraries(transcoder wsock32 ws2_32)
+    target_link_libraries(transcoder Secur32 Secur32)
+    target_link_libraries(transcoder Bcrypt Bcrypt)
+endif()

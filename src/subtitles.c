@@ -112,6 +112,7 @@ void finish_up(AVFormatContext *int_ctx, AVFormatContext **output_list, unsigned
 
 stream *extract_subtitles(char *path, const char *out_path, unsigned *stream_count, unsigned *subtitle_count)
 {
+	printf("EXTRACTING THINGS\n");
 	AVFormatContext *int_ctx = NULL;
 	AVFormatContext **output_list;
 	stream *streams;
