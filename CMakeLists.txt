@@ -8,7 +8,8 @@ include_directories(include)
 
 add_library(transcoder SHARED
         src/helper.c
-        src/subtitles.c)
+        src/subtitles.c
+        src/info.c)
 set_property(TARGET transcoder PROPERTY C_STANDARD 11)
 
 target_link_libraries(transcoder
