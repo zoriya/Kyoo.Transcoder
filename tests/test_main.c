@@ -14,11 +14,17 @@ int main(int argc, char **argv)
     unsigned subtitle_count = 0;
     stream *streams;
 
-    if (argc == 3 && !strcmp(argv[1], "subextract")) {
+    if (argc == 3 && !strcmp(argv[1], "info")) {
+        streams = get_track_info(argv[2],  &stream_count, &subtitle_count);
+        free_streams(streams, stream_count);
+    }
+    else if (argc == 3 && !strcmp(argv[1], "subextract")) {
         streams = extract_subtitles(argv[2], ".", &stream_count, &subtitle_count);
         free_streams(streams, stream_count);
-    } else
+    }
+    else
         printf("\nUsage:\n\n\
-    %s subextr video_path - Test subtitle extractions\n", argv[0]);
+    %s INFO video_path - Test info prober\n\
+    %s subextr video_path - Test subtitle extractions\n", argv[0], argv[0]);
     return (0);
 }

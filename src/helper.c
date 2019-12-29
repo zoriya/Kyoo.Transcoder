@@ -64,21 +64,17 @@ void process_packet(AVPacket *pkt, AVStream *in_stream, AVStream *out_stream)
 	pkt->pos = -1;
 }
 
-void destroy_stream(stream *s)
+type type_fromffmpeg(int type)
 {
-    if (s->title)
-        free(s->title);
-    if (s->language)
-        free(s->language);
-    if (s->codec)
-        free(s->codec);
-    if (s->path)
-        free(s->path);
-}
-
-void free_streams(stream *s, int count)
-{
-    for (unsigned i = 0; i < count; i++)
-        destroy_stream(s + i);
-    free(s);
+    switch (type)
+    {
+    case AVMEDIA_TYPE_VIDEO:
+        return video;
+    case AVMEDIA_TYPE_AUDIO:
+        return audio;
+    case AVMEDIA_TYPE_SUBTITLE:
+        return subtitle;
+    default:
+        return none;
+    }
 }

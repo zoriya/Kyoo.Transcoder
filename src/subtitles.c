@@ -27,7 +27,8 @@ int get_subtitle_data(stream *substream, AVStream *in_stream, const char *file_n
 		codec,
 		in_stream->disposition & AV_DISPOSITION_DEFAULT,
 		in_stream->disposition & AV_DISPOSITION_FORCED,
-		NULL
+		NULL,
+		subtitle
 	};
 	asprintf(&folder_path, "%s/%s", out_path, substream->language);
 	if (!folder_path)

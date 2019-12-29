@@ -12,7 +12,7 @@ int init()
     return (42);
 }
 
-stream *get_track_info(const char *path, int *stream_count, int *track_count)
+stream *get_track_info(const char *path, unsigned *stream_count, unsigned *track_count)
 {
 	AVFormatContext *ctx = NULL;
 	stream *streams;
@@ -22,22 +22,22 @@ stream *get_track_info(const char *path, int *stream_count, int *track_count)
 	*stream_count = ctx->nb_streams;
 	*track_count = 0;
 	streams = malloc(sizeof(stream) * *stream_count);
-
-	for (int i = 0; i < *stream_count; i++) {
+	for (unsigned i = 0; i < *stream_count; i++) {
 		AVStream *stream = ctx->streams[i];
 		const AVCodecParameters *codecpar = stream->codecpar;
 
-		if (codecpar->codec_type == AVMEDIA_TYPE_VIDEO || codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
+		if (type_fromffmpeg(codecpar->codec_type) != none) {
 			AVDictionaryEntry *languageptr = av_dict_get(stream->metadata, "language", NULL, 0);
 
 			*track_count += 1;
 			streams[i] = (struct stream){
-				codecpar->codec_type == AVMEDIA_TYPE_VIDEO ? "VIDEO" : NULL,
+				NULL,
 				languageptr ? strdup(languageptr->value) : NULL,
 				strdup(avcodec_get_name(codecpar->codec_id)),
 				stream->disposition & AV_DISPOSITION_DEFAULT,
 				stream->disposition & AV_DISPOSITION_FORCED,
-				strdup(path)
+				strdup(path),
+				type_fromffmpeg(codecpar->codec_type)
 			};
 		}
 		else
