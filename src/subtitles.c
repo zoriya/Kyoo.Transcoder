@@ -5,45 +5,44 @@
 #include "stream.h"
 #include "helper.h"
 #include "compatibility.h"
+#include "path_helper.h"
 #include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <transcoder.h>
 
 int get_subtitle_data(stream *substream, AVStream *in_stream, const char *folder_name, const char *out_path)
 {
 	AVDictionaryEntry *languageptr = av_dict_get(in_stream->metadata, "language", NULL, 0);
-	char *extension;
 	char *codec = strdup(avcodec_get_name(in_stream->codecpar->codec_id));
+	char *extension = get_extension_from_codec(codec);
+    char *folder_path;
 
-	if (!codec)
-		return (-1);
-	if (!strcmp(codec, "subrip"))
-		extension = ".srt";
-	else if (!strcmp(codec, "ass"))
-		extension = ".ass";
-	else {
-		printf("Unsupported subtitle codec: %s.\n", codec);
-		free(codec);
-		return (-1);
-	}
+    if (!extension)
+	    return (-1);
 	*substream = (stream) {
 		NULL,
-		languageptr ? languageptr->value : NULL,
+		languageptr ? strdup(languageptr->value) : NULL,
 		codec,
 		in_stream->disposition & AV_DISPOSITION_DEFAULT,
 		in_stream->disposition & AV_DISPOSITION_FORCED,
 		NULL
 	};
-	asprintf(&substream->path, "%s/%s", out_path, substream->language);
-	if (!substream->path || kmkdir(substream->path, 0733) < 0)
-		return (-1);
+	asprintf(&folder_path, "%s/%s", out_path, substream->language);
+	if (!folder_path)
+	    return (-1);
+    if (kmkdir(folder_path, 0733) < 0) {
+        free(folder_path);
+        return (-1);
+    }
 	asprintf(&substream->path, "%s/%s.%s%s%s%s", substream->path,
 			 folder_name,
 			 substream->language,
 			 substream->is_default ? ".default" : "",
 			 substream->is_forced ? ".forced" : "",
 			 extension);
+    free(folder_path);
 	if (!substream->path)
 		return (-1);
 	return (0);
@@ -110,42 +109,55 @@ void finish_up(AVFormatContext *int_ctx, AVFormatContext **output_list, unsigned
 	free(output_list);
 }
 
+int split_inputfile(AVFormatContext *int_ctx, AVFormatContext **output_list, stream *streams, char *path, const char *out_path)
+{
+    int subcount = 0;
+    char *folder_name = path_getfolder(path);
+
+    if (!folder_name)
+        return (-1);
+    for (unsigned int i = 0; i < int_ctx->nb_streams; i++) {
+        AVStream *in_stream = int_ctx->streams[i];
+
+        if (in_stream->codecpar->codec_type == AVMEDIA_TYPE_SUBTITLE) {
+            if (get_subtitle_data(streams + i, in_stream, folder_name, out_path) == 0 &&
+                copy_subtitle_stream(output_list[i], streams + i, int_ctx, in_stream) == 0) {
+                subcount += 1;
+                continue;
+            }
+            fprintf(stderr,"Couldn't copy the %s subtitle to output\n", streams[i].language);
+            destroy_stream(&streams[i]);
+        }
+        streams[i] = NULLSTREAM;
+        output_list[i] = NULL;
+    }
+    free(folder_name);
+    return (subcount);
+}
+
 stream *extract_subtitles(char *path, const char *out_path, unsigned *stream_count, unsigned *subtitle_count)
 {
 	AVFormatContext *int_ctx = NULL;
 	AVFormatContext **output_list;
-	stream *streams;
-	char *folder_name = strchr(path, '/');
-	char *p;
+    stream *streams;
 
-	if (!folder_name && (folder_name = strdup(folder_name)))
-		return (NULL);
-	p = strchr(folder_name, '.');
-	if (p)
-		*p = '\0';
 	if (open_input_context(&int_ctx, path) != 0)
-		return (NULL);
+        return (NULL);
 	*stream_count = int_ctx->nb_streams;
-	*subtitle_count = 0;
-	streams = malloc(sizeof(stream) * *stream_count);
+	streams = calloc(sizeof(stream), *stream_count);
 	output_list = malloc(sizeof(AVFormatContext *) * *stream_count);
-	if (!streams || !output_list)
-		return (NULL);
-	for (unsigned int i = 0; i < *stream_count; i++) {
-		AVStream *in_stream = int_ctx->streams[i];
-
-		if (in_stream->codecpar->codec_type == AVMEDIA_TYPE_SUBTITLE) {
-			if (get_subtitle_data(streams + i, in_stream, folder_name, out_path) == 0) {
-				if (copy_subtitle_stream(output_list[i], streams + i, int_ctx, in_stream) == 0) {
-					*subtitle_count += 1;
-					continue;
-				}
-			}
-		}
-		streams[i] = NULLSTREAM;
-		output_list[i] = NULL;
-	}
-	write_data(int_ctx, output_list, *stream_count);
-	finish_up(int_ctx, output_list, *stream_count);
-	return (streams);
+	if (streams && output_list) {
+        *subtitle_count = split_inputfile(int_ctx, output_list, streams, path, out_path);
+        if (*subtitle_count >= 0) {
+            write_data(int_ctx, output_list, *stream_count);
+            finish_up(int_ctx, output_list, *stream_count);
+            return (streams);
+        }
+    }
+	*subtitle_count = 0;
+    if (streams)
+        free_streams(streams, (int)*stream_count);
+    if (output_list)
+        free(output_list);
+    return (NULL);
 }

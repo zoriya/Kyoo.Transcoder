@@ -64,7 +64,21 @@ void process_packet(AVPacket *pkt, AVStream *in_stream, AVStream *out_stream)
 	pkt->pos = -1;
 }
 
-void free_memory(stream *stream_ptr)
+void destroy_stream(stream *s)
 {
-	free(stream_ptr);
+    if (s->title)
+        free(s->title);
+    if (s->language)
+        free(s->language);
+    if (s->codec)
+        free(s->codec);
+    if (s->path)
+        free(s->path);
+}
+
+void free_streams(stream *s, int count)
+{
+    for (unsigned i = 0; i < count; i++)
+        destroy_stream(s + i);
+    free(s);
 }
