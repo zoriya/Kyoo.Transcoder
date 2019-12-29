@@ -3,12 +3,6 @@
 #include "helper.h"
 #include "stream.h"
 
-int init()
-{
-	printf("Kyoo Transcoder INITIALIZED.\n");
-	return (42);
-}
-
 int open_input_context(AVFormatContext **in_ctx, const char *path)
 {
 	if (avformat_open_input(in_ctx, path, NULL, NULL)) {

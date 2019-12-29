@@ -1,1 +1,1 @@
-./configure --pkg-config-flags=--static --disable-shared --enable-static --disable-zlib --disable-iconv
+./configure --pkg-config-flags=--static --disable-shared --enable-static --disable-zlib --disable-iconv --disable-asm --disable-ffplay --disable-ffprobe

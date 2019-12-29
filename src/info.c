@@ -2,6 +2,16 @@
 // Created by Anonymus Raccoon on 20/12/2019.
 //
 
+#include <stdio.h>
+#include "stream.h"
+#include "helper.h"
+
+int init()
+{
+    printf("Kyoo Transcoder INITIALIZED.\n");
+    return (42);
+}
+
 stream *get_track_info(const char *path, int *stream_count, int *track_count)
 {
 	AVFormatContext *ctx = NULL;
