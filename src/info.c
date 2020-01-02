@@ -8,8 +8,8 @@
 
 int init()
 {
-    printf("Kyoo Transcoder INITIALIZED.\n");
-    return (42);
+    printf("Kyoo's transcoder initiated.\n");
+    return (sizeof(stream));
 }
 
 stream *get_track_info(const char *path, unsigned *stream_count, unsigned *track_count)
