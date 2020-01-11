@@ -6,7 +6,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
-#include <unistd.h>
 #include <sys/stat.h>
 #include "compatibility.h"
 
@@ -64,9 +63,12 @@ char *get_extension_from_codec(char *codec)
 
 int path_mkdir(const char *path, int mode)
 {
-    int ret = kmkdir(path, mode);
+    int ret;
     struct stat s;
 
+    if (!path)
+        return (-1);
+    ret = kmkdir(path, mode);
     if (ret < 0 && errno == EEXIST && stat(path, &s) == 0) {
         if (S_ISDIR(s.st_mode))
             return (0);

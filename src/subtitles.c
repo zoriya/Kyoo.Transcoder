@@ -31,10 +31,9 @@ int get_subtitle_data(stream *substream, AVStream *in_stream, const char *file_n
 		subtitle
 	};
 	asprintf(&folder_path, "%s/%s", out_path, substream->language);
-	if (!folder_path)
-	    return (-1);
     if (path_mkdir(folder_path, 0733) < 0) {
-        free(folder_path);
+        if (!folder_path)
+            free(folder_path);
         return (-1);
     }
 	asprintf(&substream->path, "%s/%s.%s%s%s%s", folder_path,

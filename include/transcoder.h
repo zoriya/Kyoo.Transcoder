@@ -2,7 +2,7 @@
 #include "export.h"
 #include "stream.h"
 
-//API int transmux(const char *path, const char *out_path, float *playable_duration);
+API int transmux(const char *path, const char *out_path, float *playable_duration);
 
 //API int transcode(const char *path, const char *out_path, float *playable_duration);
 

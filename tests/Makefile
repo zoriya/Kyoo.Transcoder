@@ -20,6 +20,7 @@ all: build
 
 build: $(OBJ)
 	$(CC) -o $(NAME) $(OBJ) $(LDFLAGS)
+	export LD_LIBRARY_PATH=../cmake-build-debug
 
 clean:
 	$(RM) $(OBJ)
