@@ -19,7 +19,7 @@ int main(int argc, char **argv)
         streams = get_track_info(argv[2],  &stream_count, &subtitle_count);
         free_streams(streams, stream_count);
     }
-    else if (argc == 3 && !strcmp(argv[1], "subextract")) {
+    else if (argc == 3 && !strcmp(argv[1], "subextr")) {
         streams = extract_subtitles(argv[2], ".", &stream_count, &subtitle_count);
         free_streams(streams, stream_count);
     }
