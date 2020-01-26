@@ -115,7 +115,6 @@ int transmux(const char *path, const char *out_path, float *playable_duration)
 		return (-1);
 	}
 	stream_map = prepare_streammap(in_ctx, out_ctx);
-	av_dump_format(out_ctx, 0, out_path, true);
 	options = create_options_context(out_path);
 	if (!stream_map || !options || open_output_file_for_write(out_ctx, out_path, &options) != 0) {
         destroy_context(in_ctx, out_ctx, options, stream_map);

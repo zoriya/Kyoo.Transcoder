@@ -8,7 +8,7 @@
 
 int init()
 {
-    printf("Kyoo's transcoder initiated.\n");
+    puts("Kyoo's transcoder initiated.");
     return (sizeof(stream));
 }
 

@@ -59,7 +59,6 @@ int copy_subtitle_stream(AVFormatContext **out_ctx, stream *s, AVFormatContext *
 	av_dict_copy(&(*out_ctx)->metadata, int_ctx->metadata, 0);
 	out_stream = copy_stream_to_output(*out_ctx, in_stream);
 	if (out_stream) {
-		av_dump_format(*out_ctx, 0, s->path, true);
 		if (open_output_file_for_write(*out_ctx, s->path, NULL) == 0)
 			return (0);
 	}
