@@ -28,3 +28,12 @@ if(WIN32)
     target_link_libraries(transcoder Secur32 Secur32)
     target_link_libraries(transcoder Bcrypt Bcrypt)
 endif()
+
+include(ExternalProject)
+ExternalProject_Add(FFMPEG
+        SOURCE_DIR ${CMAKE_SOURCE_DIR}/ffmpeg
+        BUILD_IN_SOURCE 1
+        CONFIGURE_COMMAND ./configure --pkg-config-flags=--static --disable-shared --enable-static --disable-zlib --disable-iconv --disable-asm --disable-ffplay --disable-ffprobe
+        BUILD_COMMAND make
+        INSTALL_COMMAND ""
+)
