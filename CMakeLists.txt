@@ -35,5 +35,5 @@ ExternalProject_Add(FFMPEG
         BUILD_IN_SOURCE 1
         CONFIGURE_COMMAND ./configure --pkg-config-flags=--static --disable-shared --enable-static --disable-zlib --disable-iconv --disable-asm --disable-ffplay --disable-ffprobe
         BUILD_COMMAND make
-        INSTALL_COMMAND ""
+        INSTALL_COMMAND cmake -E echo "Skipping install step."
 )
