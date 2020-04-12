@@ -65,15 +65,15 @@ void process_packet(AVPacket *pkt, AVStream *in_stream, AVStream *out_stream)
 
 type type_fromffmpeg(int type)
 {
-    switch (type)
-    {
-    case AVMEDIA_TYPE_VIDEO:
-        return video;
-    case AVMEDIA_TYPE_AUDIO:
-        return audio;
-    case AVMEDIA_TYPE_SUBTITLE:
-        return subtitle;
-    default:
-        return none;
-    }
+	switch (type)
+	{
+	case AVMEDIA_TYPE_VIDEO:
+		return video;
+	case AVMEDIA_TYPE_AUDIO:
+		return audio;
+	case AVMEDIA_TYPE_SUBTITLE:
+		return subtitle;
+	default:
+		return none;
+	}
 }

@@ -8,8 +8,8 @@
 
 int init()
 {
-    puts("Kyoo's transcoder initiated.");
-    return (sizeof(stream));
+	puts("Kyoo's transcoder initiated.");
+	return (sizeof(stream));
 }
 
 stream *get_track_info(const char *path, unsigned *stream_count, unsigned *track_count)

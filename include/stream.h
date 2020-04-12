@@ -4,10 +4,10 @@
 
 typedef enum
 {
-    none = 0,
-    video = 1,
-    audio = 2,
-    subtitle = 3
+	none = 0,
+	video = 1,
+	audio = 2,
+	subtitle = 3
 } type;
 
 typedef struct stream
