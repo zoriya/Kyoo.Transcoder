@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdbool.h>
 #include "helper.h"
 #include "stream.h"
 
@@ -7,13 +6,13 @@ int open_input_context(AVFormatContext **in_ctx, const char *path)
 {
 	if (avformat_open_input(in_ctx, path, NULL, NULL)) {
 		fprintf(stderr, "Error: Can't open the file at %s.\n", path);
-		return (1);
+		return 1;
 	}
 	if (avformat_find_stream_info(*in_ctx, NULL) < 0) {
 		fprintf(stderr,"Error: Could't find streams informations for the file at %s.\n", path);
-		return (1);
+		return 1;
 	}
-	return (0);
+	return 0;
 }
 
 AVStream *copy_stream_to_output(AVFormatContext *out_ctx, AVStream *in_stream)
@@ -22,11 +21,11 @@ AVStream *copy_stream_to_output(AVFormatContext *out_ctx, AVStream *in_stream)
 
 	if (out_stream == NULL) {
 		fprintf(stderr,"Error: Couldn't create stream.\n");
-		return (NULL);
+		return NULL;
 	}
 	if (avcodec_parameters_copy(out_stream->codecpar, in_stream->codecpar) < 0) {
 		fprintf(stderr, "Error: Couldn't copy parameters to the output file.\n");
-		return (NULL);
+		return NULL;
 	}
 	out_stream->codecpar->codec_tag = 0;
 	avformat_transfer_internal_stream_timing_info(out_ctx->oformat, out_stream, in_stream, AVFMT_TBCF_AUTO);
@@ -35,7 +34,7 @@ AVStream *copy_stream_to_output(AVFormatContext *out_ctx, AVStream *in_stream)
 	out_stream->disposition = in_stream->disposition;
 	out_stream->avg_frame_rate = in_stream->avg_frame_rate;
 	out_stream->r_frame_rate = in_stream->r_frame_rate;
-	return (out_stream);
+	return out_stream;
 }
 
 int open_output_file_for_write(AVFormatContext *out_ctx, const char *out_path, AVDictionary **options)
@@ -43,16 +42,16 @@ int open_output_file_for_write(AVFormatContext *out_ctx, const char *out_path, A
 	if (!(out_ctx->oformat->flags & AVFMT_NOFILE)) {
 		if (avio_open(&out_ctx->pb, out_path, AVIO_FLAG_WRITE) < 0) {
 			fprintf(stderr, "Error: Couldn't open file at %s.\n", out_path);
-			return (1);
+			return 1;
 		}
 	}
 	else
 		printf("Output flag set to AVFMT_NOFILE.\n");
 	if (avformat_write_header(out_ctx, options) < 0) {
 		fprintf(stderr, "Error: Couldn't write headers to file at %s.\n", out_path);
-		return (1);
+		return 1;
 	}
-	return (0);
+	return 0;
 }
 
 void process_packet(AVPacket *pkt, AVStream *in_stream, AVStream *out_stream)

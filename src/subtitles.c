@@ -4,13 +4,13 @@
 
 #include "stream.h"
 #include "helper.h"
-#include "compatibility.h"
 #include "path_helper.h"
-#include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <transcoder.h>
+
+int asprintf(char **strp, const char *fmt, ...);
 
 int get_subtitle_data(stream *substream, AVStream *in_stream, const char *file_name, const char *out_path)
 {
@@ -20,7 +20,7 @@ int get_subtitle_data(stream *substream, AVStream *in_stream, const char *file_n
 	char *folder_path;
 
 	if (!extension)
-		return (-1);
+		return -1;
 	*substream = (stream) {
 		NULL,
 		languageptr ? strdup(languageptr->value) : NULL,
@@ -34,7 +34,7 @@ int get_subtitle_data(stream *substream, AVStream *in_stream, const char *file_n
 	if (path_mkdir(folder_path, 0733) < 0) {
 		if (!folder_path)
 			free(folder_path);
-		return (-1);
+		return -1;
 	}
 	asprintf(&substream->path, "%s/%s.%s%s%s%s", folder_path,
 			 file_name,
@@ -44,8 +44,8 @@ int get_subtitle_data(stream *substream, AVStream *in_stream, const char *file_n
 			 extension);
 	free(folder_path);
 	if (!substream->path)
-		return (-1);
-	return (0);
+		return -1;
+	return 0;
 }
 
 int copy_subtitle_stream(AVFormatContext **out_ctx, stream *s, AVFormatContext *int_ctx, AVStream *in_stream)
@@ -54,19 +54,19 @@ int copy_subtitle_stream(AVFormatContext **out_ctx, stream *s, AVFormatContext *
 
 	if (avformat_alloc_output_context2(out_ctx, NULL, NULL, s->path) < 0) {
 		printf("Error: Couldn't create an output file.\n");
-		return (-1);
+		return -1;
 	}
 	av_dict_copy(&(*out_ctx)->metadata, int_ctx->metadata, 0);
 	out_stream = copy_stream_to_output(*out_ctx, in_stream);
 	if (out_stream) {
 		if (open_output_file_for_write(*out_ctx, s->path, NULL) == 0)
-			return (0);
+			return 0;
 	}
 	if (*out_ctx && !((*out_ctx)->flags & AVFMT_NOFILE))
 		avio_closep(&(*out_ctx)->pb);
 	avformat_free_context(*out_ctx);
 	fprintf(stderr, "An error occured, cleaning up th output context for the %s stream.\n", s->language);
-	return (-1);
+	return -1;
 }
 
 void write_data(AVFormatContext *int_ctx, AVFormatContext **output_list, unsigned int out_count)
@@ -114,7 +114,7 @@ int split_inputfile(AVFormatContext *int_ctx, AVFormatContext **output_list, str
 	char *file_name = path_getfilename(path);
 
 	if (!file_name)
-		return (-1);
+		return -1;
 	for (unsigned int i = 0; i < int_ctx->nb_streams; i++) {
 		AVStream *in_stream = int_ctx->streams[i];
 
@@ -131,7 +131,7 @@ int split_inputfile(AVFormatContext *int_ctx, AVFormatContext **output_list, str
 		output_list[i] = NULL;
 	}
 	free(file_name);
-	return (subcount);
+	return subcount;
 }
 
 stream *extract_subtitles(char *path, const char *out_path, unsigned *stream_count, unsigned *subtitle_count)
@@ -141,7 +141,7 @@ stream *extract_subtitles(char *path, const char *out_path, unsigned *stream_cou
 	stream *streams;
 
 	if (open_input_context(&int_ctx, path) != 0)
-		return (NULL);
+		return NULL;
 	*stream_count = int_ctx->nb_streams;
 	streams = calloc(sizeof(stream), *stream_count);
 	output_list = malloc(sizeof(AVFormatContext *) * *stream_count);
@@ -150,7 +150,7 @@ stream *extract_subtitles(char *path, const char *out_path, unsigned *stream_cou
 		if (*subtitle_count >= 0) {
 			write_data(int_ctx, output_list, *stream_count);
 			finish_up(int_ctx, output_list, *stream_count);
-			return (streams);
+			return streams;
 		}
 	}
 	*subtitle_count = 0;
@@ -158,5 +158,5 @@ stream *extract_subtitles(char *path, const char *out_path, unsigned *stream_cou
 		free_streams(streams, (int)*stream_count);
 	if (output_list)
 		free(output_list);
-	return (NULL);
+	return NULL;
 }

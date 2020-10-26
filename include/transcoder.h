@@ -8,7 +8,9 @@ API int transmux(const char *path, const char *out_path, float *playable_duratio
 
 API stream *get_track_info(const char *path, unsigned *stream_count, unsigned *track_count);
 
-//Take the path of the file and the path of the output directory. It will return the list of subtitle streams in the streams variable. The int returned is the number of subtitles extracted.
+//Take the path of the file and the path of the output directory.
+// It will return the list of subtitle streams in the streams variable.
+// The int returned is the number of subtitles extracted.
 API stream *extract_subtitles(char *path, const char *out_path, unsigned *stream_count, unsigned *subtitle_count);
 
 void destroy_stream(stream *s);

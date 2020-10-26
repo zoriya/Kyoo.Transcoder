@@ -9,7 +9,7 @@
 int init()
 {
 	puts("Kyoo's transcoder initiated.");
-	return (sizeof(stream));
+	return sizeof(stream);
 }
 
 stream *get_track_info(const char *path, unsigned *stream_count, unsigned *track_count)
@@ -18,7 +18,7 @@ stream *get_track_info(const char *path, unsigned *stream_count, unsigned *track
 	stream *streams;
 
 	if (open_input_context(&ctx, path) != 0)
-		return (NULL);
+		return NULL;
 	*stream_count = ctx->nb_streams;
 	*track_count = 0;
 	streams = malloc(sizeof(stream) * *stream_count);
@@ -44,5 +44,5 @@ stream *get_track_info(const char *path, unsigned *stream_count, unsigned *track
 			streams[i] = NULLSTREAM;
 	}
 	avformat_close_input(&ctx);
-	return (streams);
+	return streams;
 }

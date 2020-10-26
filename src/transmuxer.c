@@ -11,10 +11,10 @@
 static bool should_copy_to_transmuxed(enum AVMediaType codec_type)
 {
 	if (codec_type == AVMEDIA_TYPE_VIDEO)
-		return (true);
+		return true;
 	if (codec_type == AVMEDIA_TYPE_AUDIO)
-		return (true);
-	return (false);
+		return true;
+	return false;
 }
 
 static int *prepare_streammap(AVFormatContext *in_ctx, AVFormatContext *out_ctx)
@@ -24,7 +24,7 @@ static int *prepare_streammap(AVFormatContext *in_ctx, AVFormatContext *out_ctx)
 	AVStream *stream;
 
 	if (!stream_map)
-		return (NULL);
+		return NULL;
 	for (unsigned i = 0; i < in_ctx->nb_streams; i++) {
 		stream = in_ctx->streams[i];
 		if (should_copy_to_transmuxed(stream->codecpar->codec_type)) {
@@ -32,12 +32,12 @@ static int *prepare_streammap(AVFormatContext *in_ctx, AVFormatContext *out_ctx)
 			stream_count++;
 			if (!copy_stream_to_output(out_ctx, stream)) {
 				free(stream_map);
-				return (NULL);
+				return NULL;
 			}
 		} else
 			stream_map[i] = -1;
 	}
-	return (stream_map);
+	return stream_map;
 }
 
 static AVDictionary *create_options_context(const char *out_path)
@@ -48,15 +48,16 @@ static AVDictionary *create_options_context(const char *out_path)
 
 	sprintf(seg_path, "%.*s/segments/", folder_index, out_path);
 	if (path_mkdir(seg_path, 0733) < 0) {
-		fprintf(stderr, "Error: Couldn't create segment output folder. Part of the output path does not exist or you don't have write rights.\n");
-		return (NULL);
+		fprintf(stderr, "Error: Couldn't create segment output folder. "
+			"Part of the output path does not exist or you don't have write rights.\n");
+		return NULL;
 	}
 	strcat(seg_path, "%v-%03d.ts");
 	av_dict_set(&options, "hls_segment_filename", seg_path, 0);
 	av_dict_set(&options, "hls_base_url", "segment/", 0);
 	av_dict_set(&options, "hls_list_size", "0", 0);
 	av_dict_set(&options, "streaming", "1", 0);
-	return (options);
+	return options;
 }
 
 static void write_to_output(AVFormatContext *in_ctx, AVFormatContext *out_ctx, int *stream_map, float *playable_duration)
@@ -108,20 +109,20 @@ int transmux(const char *path, const char *out_path, float *playable_duration)
 	av_log_set_level(AV_LOG_WARNING);
 	if (open_input_context(&in_ctx, path) != 0) {
 		fprintf(stderr, "Error: Coudln't open the input file.\n");
-		return (-1);
+		return -1;
 	}
 	if (avformat_alloc_output_context2(&out_ctx, NULL, NULL, out_path) < 0) {
 		fprintf(stderr, "Error: Couldn't create an output file.\n");
 		avformat_close_input(&in_ctx);
-		return (-1);
+		return -1;
 	}
 	stream_map = prepare_streammap(in_ctx, out_ctx);
 	options = create_options_context(out_path);
 	if (!stream_map || !options || open_output_file_for_write(out_ctx, out_path, &options) != 0) {
 		destroy_context(in_ctx, out_ctx, options, stream_map);
-		return (-1);
+		return -1;
 	}
 	write_to_output(in_ctx, out_ctx, stream_map, playable_duration);
 	destroy_context(in_ctx, out_ctx, options, stream_map);
-	return (0);
+	return 0;
 }
