@@ -4,6 +4,7 @@
 
 #pragma once
 
+#define _GNU_SOURCE // For asprintf
 #include <stdio.h>
 
 #ifdef __WIN32__

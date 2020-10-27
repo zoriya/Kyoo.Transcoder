@@ -72,6 +72,8 @@ type type_fromffmpeg(int type)
 		return audio;
 	case AVMEDIA_TYPE_SUBTITLE:
 		return subtitle;
+	case AVMEDIA_TYPE_ATTACHMENT:
+		return font;
 	default:
 		return none;
 	}

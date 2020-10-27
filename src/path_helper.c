@@ -51,12 +51,11 @@ char *get_extension_from_codec(char *codec)
 	if (!codec)
 		return NULL;
 	if (!strcmp(codec, "subrip"))
-		return(".srt");
+		return ".srt";
 	else if (!strcmp(codec, "ass"))
-		return(".ass");
+		return ".ass";
 	else {
 		printf("Unsupported subtitle codec: %s.\n", codec);
-		free(codec);
 		return NULL;
 	}
 }
