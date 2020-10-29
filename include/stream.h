@@ -27,18 +27,8 @@ typedef struct stream
 	type type;
 } stream;
 
-#define NULLSTREAM (struct stream) { \
-	NULL, \
-	NULL, \
-	NULL, \
-	false, \
-	false, \
-	NULL, \
-	none \
-}
-
 void extract_subtitle(stream *subtitle,
                       const char *out_path,
                       AVStream *stream,
                       AVFormatContext *in_ctx,
-                      AVFormatContext *out_ctx);
+                      AVFormatContext **out_ctx);

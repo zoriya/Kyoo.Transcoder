@@ -40,23 +40,23 @@ int create_out_path(stream *subtitle, const char *out_path)
 	return access(subtitle->path, F_OK) == 0 ? -1 : 0;
 }
 
-int copy_subtitle_stream(AVFormatContext *out_ctx, stream *s, AVFormatContext *int_ctx, AVStream *in_stream)
+int copy_subtitle_stream(AVFormatContext **out_ctx, stream *s, AVFormatContext *int_ctx, AVStream *in_stream)
 {
 	AVStream *out_stream = NULL;
 
-	if (avformat_alloc_output_context2(&out_ctx, NULL, NULL, s->path) < 0) {
+	if (avformat_alloc_output_context2(out_ctx, NULL, NULL, s->path) < 0) {
 		fprintf(stderr, "Error: Couldn't create an output file.\n");
 		return -1;
 	}
 
-	av_dict_copy(&out_ctx->metadata, int_ctx->metadata, 0);
-	out_stream = copy_stream_to_output(out_ctx, in_stream);
-	if (out_stream && open_output_file_for_write(out_ctx, s->path, NULL) == 0)
+	av_dict_copy(&(*out_ctx)->metadata, int_ctx->metadata, 0);
+	out_stream = copy_stream_to_output(*out_ctx, in_stream);
+	if (out_stream && open_output_file_for_write(*out_ctx, s->path, NULL) == 0)
 		return 0;
 
-	if (out_ctx && !(out_ctx->flags & AVFMT_NOFILE))
-		avio_closep(&out_ctx->pb);
-	avformat_free_context(out_ctx);
+	if (*out_ctx && !((*out_ctx)->flags & AVFMT_NOFILE))
+		avio_closep(&(*out_ctx)->pb);
+	avformat_free_context(*out_ctx);
 	fprintf(stderr, "An error occured, cleaning up th output context for the %s stream.\n", s->language);
 	return -1;
 }
@@ -65,7 +65,7 @@ void extract_subtitle(stream *subtitle,
 					  const char *out_path,
 					  AVStream *stream,
 					  AVFormatContext *in_ctx,
-					  AVFormatContext *out_ctx)
+					  AVFormatContext **out_ctx)
 {
 	if (create_out_path(subtitle, out_path) != 0)
 		return;
