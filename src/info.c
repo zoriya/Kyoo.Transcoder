@@ -91,7 +91,9 @@ stream *extract_infos(const char *path, const char *out_path, unsigned *stream_c
 				*track_count += 1;
 				streams[i] = parse_stream(stream, stream_type, path);
 				if (stream_type == subtitle)
-					extract_subtitle(&streams[i], out_path, stream, ctx, &output_list[i]);
+					extract_track(&streams[i], out_path, stream, ctx, &output_list[i]);
+				if (stream_type == font)
+					extract_font(&streams[i], out_path, stream);
 			}
 		}
 	}

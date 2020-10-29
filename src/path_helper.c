@@ -3,7 +3,6 @@
 //
 
 #include <string.h>
-#include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
 #include <sys/stat.h>
@@ -50,14 +49,16 @@ char *get_extension_from_codec(char *codec)
 {
 	if (!codec)
 		return NULL;
+
 	if (!strcmp(codec, "subrip"))
 		return ".srt";
-	else if (!strcmp(codec, "ass"))
+	if (!strcmp(codec, "ass"))
 		return ".ass";
-	else {
-		printf("Unsupported subtitle codec: %s.\n", codec);
-		return NULL;
-	}
+	if (!strcmp(codec, "ttf"))
+		return ".ttf";
+
+	printf("Unsupported subtitle codec: %s.\n", codec);
+	return NULL;
 }
 
 int path_mkdir(const char *path, int mode)

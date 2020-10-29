@@ -27,8 +27,10 @@ typedef struct stream
 	type type;
 } stream;
 
-void extract_subtitle(stream *subtitle,
-                      const char *out_path,
-                      AVStream *stream,
-                      AVFormatContext *in_ctx,
-                      AVFormatContext **out_ctx);
+void extract_track(stream *track,
+                   const char *out_path,
+                   AVStream *stream,
+                   AVFormatContext *in_ctx,
+                   AVFormatContext **out_ctx);
+
+void extract_font(stream *font, const char *out_path, AVStream *stream);
