@@ -92,7 +92,7 @@ void extract_font(stream *font, const char *out_path, AVStream *stream)
 	if (count > 0)
 		font->title = strndup(filename->value, count);
 
-	int fd = open(font->path, O_WRONLY | O_CREAT);
+	int fd = open(font->path, O_WRONLY | O_CREAT, 0744);
 	if (fd == -1)
 		return perror("Kyoo couldn't extract a subtitle's font");
 	write(fd, stream->codecpar->extradata, stream->codecpar->extradata_size);
