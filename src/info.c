@@ -85,7 +85,7 @@ stream *extract_infos(const char *path, const char *out_path, unsigned *stream_c
 	if (output_list && streams) {
 		for (unsigned i = 0; i < *stream_count; i++) {
 			AVStream *stream = ctx->streams[i];
-			type stream_type = type_fromffmpeg(stream->codecpar->codec_type);
+			type stream_type = type_fromffmpeg(stream);
 
 			if (stream_type != none) {
 				*track_count += 1;

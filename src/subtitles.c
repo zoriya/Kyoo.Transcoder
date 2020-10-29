@@ -80,7 +80,7 @@ void extract_font(stream *font, const char *out_path, AVStream *stream)
 	if (!filename)
 		return;
 	free(font->path);
-	font->path = malloc((strlen(out_path) + 7 + strlen(filename->value)) * sizeof(char));
+	font->path = malloc((strlen(out_path) + 8 + strlen(filename->value)) * sizeof(char));
 	if (!font->path)
 		return;
 	strcpy(font->path, out_path);

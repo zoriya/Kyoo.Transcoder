@@ -62,9 +62,9 @@ void process_packet(AVPacket *pkt, AVStream *in_stream, AVStream *out_stream)
 	pkt->pos = -1;
 }
 
-type type_fromffmpeg(int type)
+type type_fromffmpeg(AVStream *stream)
 {
-	switch (type)
+	switch (stream->codecpar->codec_type)
 	{
 	case AVMEDIA_TYPE_VIDEO:
 		return video;
@@ -73,7 +73,9 @@ type type_fromffmpeg(int type)
 	case AVMEDIA_TYPE_SUBTITLE:
 		return subtitle;
 	case AVMEDIA_TYPE_ATTACHMENT:
-		return font;
+		if (!strcmp(avcodec_get_name(stream->codecpar->codec_id), "ttf"))
+			return font;
+		return none;
 	default:
 		return none;
 	}
