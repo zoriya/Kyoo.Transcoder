@@ -45,6 +45,14 @@ void write_to_outputs(AVFormatContext **output_list, AVFormatContext *in_ctx)
 	}
 }
 
+bool list_empty(void **list, int count)
+{
+	for (int i = 0; i < count; i++)
+		if (list[i])
+			return false;
+	return true;
+}
+
 stream parse_stream(AVStream *stream, type stream_type, const char *path)
 {
 	const AVCodecParameters *codecpar = stream->codecpar;
@@ -87,7 +95,8 @@ stream *extract_infos(const char *path, const char *out_path, unsigned *stream_c
 			}
 		}
 	}
-	write_to_outputs(output_list, ctx);
+	if (!list_empty((void **)output_list, ctx->nb_streams))
+		write_to_outputs(output_list, ctx);
 	avformat_close_input(&ctx);
 	if (!output_list)
 		return free(streams), NULL;
