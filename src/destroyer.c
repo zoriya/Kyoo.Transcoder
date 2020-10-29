@@ -7,17 +7,13 @@
 
 void destroy_stream(stream *s)
 {
-	if (s->title)
-		free(s->title);
-	if (s->language)
-		free(s->language);
-	if (s->codec)
-		free(s->codec);
-	if (s->path)
-		free(s->path);
+	free(s->title);
+	free(s->language);
+	free(s->codec);
+	free(s->path);
 }
 
-void free_streams(stream *s, int count)
+void free_streams(stream *s, unsigned count)
 {
 	for (unsigned i = 0; i < count; i++)
 		destroy_stream(s + i);

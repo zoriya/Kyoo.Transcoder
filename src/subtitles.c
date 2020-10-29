@@ -26,6 +26,7 @@ int create_out_path(stream *subtitle, const char *out_path)
 		free(file_name);
 		return -2;
 	}
+	free(subtitle->path);
 	asprintf(&subtitle->path, "%s/%s.%s%s%s%s", folder_path,
 	         file_name,
 	         subtitle->language,

@@ -65,15 +65,16 @@ stream *extract_infos(const char *path, const char *out_path, unsigned *stream_c
 {
 	AVFormatContext *ctx = NULL;
 	AVFormatContext **output_list;
-	stream *streams = calloc(ctx->nb_streams, sizeof(stream));
+	stream *streams;
 
-	if (!streams || open_input_context(&ctx, path) != 0)
+	if (open_input_context(&ctx, path) != 0)
 		return free(streams), NULL;
 	*stream_count = ctx->nb_streams;
 	*track_count = 0;
+	streams = calloc(ctx->nb_streams, sizeof(stream));
 	output_list = calloc(ctx->nb_streams, sizeof(AVFormatContext *));
 
-	if (output_list) {
+	if (output_list && streams) {
 		for (unsigned i = 0; i < *stream_count; i++) {
 			AVStream *stream = ctx->streams[i];
 			type stream_type = type_fromffmpeg(stream->codecpar->codec_type);
@@ -90,5 +91,6 @@ stream *extract_infos(const char *path, const char *out_path, unsigned *stream_c
 	avformat_close_input(&ctx);
 	if (!output_list)
 		return free(streams), NULL;
+	free(output_list);
 	return streams;
 }
