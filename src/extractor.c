@@ -14,15 +14,24 @@
 // @return -2 on error, -1 if track has alreaady been extracted, 0 on success.
 int create_out_path(stream *track, const char *out_path)
 {
-	char *extension = get_extension_from_codec(track->codec);
 	char *folder_path;
-	char *file_name;
+	char *tmp;
 
-	if (!extension)
+	asprintf(&folder_path, "%s/Subtitles/%s", out_path, track->language);
+	if (!folder_path)
 		return -2;
-	file_name = path_getfilename(track->path);
-	asprintf(&folder_path, "%s/%s", out_path, track->language);
-	if (path_mkdir(folder_path, 0733) < 0) {
+	tmp = strrchr(folder_path, '/');
+	*tmp = '\0';
+	if (path_mkdir(folder_path, 0733) < 0)
+		return free(folder_path), -2;
+	*tmp = '/';
+	if (path_mkdir(folder_path, 0733) < 0)
+		return free(folder_path), -2;
+
+	char *extension = get_extension_from_codec(track->codec);
+	char *file_name = path_getfilename(track->path);
+
+	if (!extension || !file_name) {
 		free(folder_path);
 		free(file_name);
 		return -2;
@@ -80,11 +89,11 @@ void extract_font(stream *font, const char *out_path, AVStream *stream)
 	if (!filename)
 		return;
 	free(font->path);
-	font->path = malloc((strlen(out_path) + 8 + strlen(filename->value)) * sizeof(char));
+	font->path = malloc((strlen(out_path) + 18 + strlen(filename->value)) * sizeof(char));
 	if (!font->path)
 		return;
 	strcpy(font->path, out_path);
-	strcat(font->path, "/fonts/");
+	strcat(font->path, "/Subtitles/fonts/");
 	if (path_mkdir(font->path, 0733) < 0)
 		return free(font->path);
 	strcat(font->path, filename->value);
@@ -97,4 +106,39 @@ void extract_font(stream *font, const char *out_path, AVStream *stream)
 		return perror("Kyoo couldn't extract a subtitle's font");
 	write(fd, stream->codecpar->extradata, stream->codecpar->extradata_size);
 	close(fd);
+}
+
+void extract_chapters(AVFormatContext *ctx, const char *out_path)
+{
+	const char *filename = strrchr(ctx->url, '/');
+	char *path = malloc((strlen(filename) + strlen(out_path) + 14) * sizeof(char));
+	char *tmp;
+
+	if (!path)
+		return;
+	strcpy(path, out_path);
+	strcat(path, "/Chapters/");
+	if (path_mkdir(path, 0733) < 0)
+		return;
+	strcat(path, filename);
+	tmp = strrchr(path, '.');
+	if (tmp)
+		*tmp = '\0';
+	strcat(path, ".txt");
+
+	int fd = open(path, O_WRONLY | O_CREAT, 0744);
+
+	for (unsigned i = 0; i < ctx->nb_chapters; i++) {
+		AVDictionaryEntry *name = av_dict_get(ctx->chapters[i]->metadata, "title", NULL, 0);
+		if (!name)
+			continue;
+		const AVChapter *chapter = ctx->chapters[i];
+		if (chapter->start == AV_NOPTS_VALUE || chapter->end == AV_NOPTS_VALUE)
+			continue;
+		double start = chapter->start * av_q2d(chapter->time_base);
+		double end = chapter->end * av_q2d(chapter->time_base);
+		dprintf(fd, "%f-%f: %s\n", start, end, name->value);
+	}
+	close(fd);
+	free(path);
 }

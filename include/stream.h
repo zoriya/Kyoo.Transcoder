@@ -32,5 +32,5 @@ void extract_track(stream *track,
                    AVStream *stream,
                    AVFormatContext *in_ctx,
                    AVFormatContext **out_ctx);
-
 void extract_font(stream *font, const char *out_path, AVStream *stream);
+void extract_chapters(AVFormatContext *ctx, const char *out_path);

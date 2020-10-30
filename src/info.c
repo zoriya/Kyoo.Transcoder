@@ -83,6 +83,7 @@ stream *extract_infos(const char *path, const char *out_path, unsigned *stream_c
 	output_list = calloc(ctx->nb_streams, sizeof(AVFormatContext *));
 
 	if (output_list && streams) {
+		extract_chapters(ctx, out_path);
 		for (unsigned i = 0; i < *stream_count; i++) {
 			AVStream *stream = ctx->streams[i];
 			type stream_type = type_fromffmpeg(stream);
