@@ -110,6 +110,9 @@ void extract_font(stream *font, const char *out_path, AVStream *stream)
 
 void extract_chapters(AVFormatContext *ctx, const char *out_path)
 {
+	if (ctx->nb_chapters == 0)
+		return;
+
 	const char *filename = strrchr(ctx->url, '/');
 	char *path = malloc((strlen(filename) + strlen(out_path) + 14) * sizeof(char));
 	char *tmp;
