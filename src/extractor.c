@@ -12,12 +12,12 @@
 #include <fcntl.h>
 
 // @return -2 on error, -1 if track has alreaady been extracted, 0 on success.
-int create_out_path(stream *track, const char *out_path)
+int create_out_path(stream *track, const char *out_path, int track_id)
 {
 	char *folder_path;
 	char *tmp;
 
-	asprintf(&folder_path, "%s/Subtitles/%s", out_path, track->language);
+	asprintf(&folder_path, "%s/Subtitles/%s", out_path, track->language ? track->language : "und");
 	if (!folder_path)
 		return -2;
 	tmp = strrchr(folder_path, '/');
@@ -37,9 +37,14 @@ int create_out_path(stream *track, const char *out_path)
 		return -2;
 	}
 	free(track->path);
-	asprintf(&track->path, "%s/%s.%s%s%s%s", folder_path,
+
+	char identifier[8];
+	if (!track->language)
+		snprintf(identifier, 8, "%d", track_id);
+	asprintf(&track->path, "%s/%s.%s%s%s%s",
+	         folder_path,
 	         file_name,
-	         track->language,
+	         track->language ? track->language : identifier,
 	         track->is_default ? ".default" : "",
 	         track->is_forced ? ".forced" : "",
 	         extension);
@@ -77,7 +82,7 @@ void extract_track(stream *track,
                    AVFormatContext *in_ctx,
                    AVFormatContext **out_ctx)
 {
-	if (create_out_path(track, out_path) != 0)
+	if (create_out_path(track, out_path, stream->id) != 0)
 		return;
 	extract_stream(out_ctx, track, in_ctx, stream);
 }
@@ -101,7 +106,7 @@ void extract_font(stream *font, const char *out_path, AVStream *stream)
 	if (count > 0)
 		font->title = strndup(filename->value, count);
 
-	int fd = open(font->path, O_WRONLY | O_CREAT, 0744);
+	int fd = open(font->path, O_WRONLY | O_CREAT, 0644);
 	if (fd == -1)
 		return perror("Kyoo couldn't extract a subtitle's font");
 	write(fd, stream->codecpar->extradata, stream->codecpar->extradata_size);
@@ -129,7 +134,7 @@ void extract_chapters(AVFormatContext *ctx, const char *out_path)
 		*tmp = '\0';
 	strcat(path, ".txt");
 
-	int fd = open(path, O_WRONLY | O_CREAT, 0744);
+	int fd = open(path, O_WRONLY | O_CREAT, 0644);
 
 	for (unsigned i = 0; i < ctx->nb_chapters; i++) {
 		AVDictionaryEntry *name = av_dict_get(ctx->chapters[i]->metadata, "title", NULL, 0);
