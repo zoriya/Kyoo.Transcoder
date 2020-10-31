@@ -140,7 +140,7 @@ void extract_chapters(AVFormatContext *ctx, const char *out_path)
 			continue;
 		double start = chapter->start * av_q2d(chapter->time_base);
 		double end = chapter->end * av_q2d(chapter->time_base);
-		dprintf(fd, "%f-%f: %s\n", start, end, name->value);
+		dprintf(fd, "%f %f %s\n", start, end, name->value);
 	}
 	close(fd);
 	free(path);
