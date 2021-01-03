@@ -23,6 +23,7 @@ target_link_libraries(transcoder
 	${CMAKE_SOURCE_DIR}/ffmpeg/libavdevice/libavdevice.a
 	${CMAKE_SOURCE_DIR}/ffmpeg/libswresample/libswresample.a
 )
+target_link_libraries(transcoder m bz2 va-drm va-x11 lzma vdpau)
 
 if(WIN32)
 	target_link_libraries(transcoder wsock32 ws2_32)
