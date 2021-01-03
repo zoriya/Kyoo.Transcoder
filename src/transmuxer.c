@@ -106,7 +106,7 @@ int transmux(const char *path, const char *out_path, float *playable_duration)
 	int *stream_map;
 
 	*playable_duration = 0;
-	av_log_set_level(AV_LOG_WARNING);
+	av_log_set_level(AV_LOG_LEVEL);
 	if (open_input_context(&in_ctx, path) != 0) {
 		fprintf(stderr, "Error: Coudln't open the input file.\n");
 		return -1;

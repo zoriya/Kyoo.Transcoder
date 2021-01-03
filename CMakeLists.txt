@@ -21,7 +21,8 @@ target_link_libraries(transcoder
 	${CMAKE_SOURCE_DIR}/ffmpeg/libavcodec/libavcodec.a
 	${CMAKE_SOURCE_DIR}/ffmpeg/libavutil/libavutil.a
 	${CMAKE_SOURCE_DIR}/ffmpeg/libavdevice/libavdevice.a
-	${CMAKE_SOURCE_DIR}/ffmpeg/libswresample/libswresample.a)
+	${CMAKE_SOURCE_DIR}/ffmpeg/libswresample/libswresample.a
+)
 
 if(WIN32)
 	target_link_libraries(transcoder wsock32 ws2_32)
@@ -37,3 +38,4 @@ ExternalProject_Add(FFMPEG
 	BUILD_COMMAND make
 	INSTALL_COMMAND cmake -E echo "Skipping install step."
 )
+add_dependencies(transcoder FFMPEG)

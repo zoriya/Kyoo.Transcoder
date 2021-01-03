@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include "libavformat/avformat.h"
-#include "libavutil/dict.h"
-#include "libavutil/timestamp.h"
+#include <libavformat/avformat.h>
+#include <libavutil/dict.h>
+#include <libavutil/timestamp.h>
 #include "stream.h"
 
 int open_input_context(AVFormatContext **inputContext, const char *path);

@@ -6,6 +6,9 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <libavformat/avformat.h>
+#include <libavutil/log.h>
+
+#define AV_LOG_LEVEL AV_LOG_WARNING
 
 typedef enum
 {
