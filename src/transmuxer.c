@@ -54,7 +54,7 @@ static AVDictionary *create_options_context(const char *out_path)
 	}
 	strcat(seg_path, "%v-%03d.ts");
 	av_dict_set(&options, "hls_segment_filename", seg_path, 0);
-	av_dict_set(&options, "hls_base_url", "segment/", 0);
+	av_dict_set(&options, "hls_base_url", "segments/", 0);
 	av_dict_set(&options, "hls_list_size", "0", 0);
 	av_dict_set(&options, "streaming", "1", 0);
 	return options;

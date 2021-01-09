@@ -28,12 +28,6 @@ AVStream *copy_stream_to_output(AVFormatContext *out_ctx, AVStream *in_stream)
 		return NULL;
 	}
 	out_stream->codecpar->codec_tag = 0;
-	avformat_transfer_internal_stream_timing_info(out_ctx->oformat, out_stream, in_stream, AVFMT_TBCF_AUTO);
-	out_stream->time_base = av_add_q(av_stream_get_codec_timebase(out_stream), (AVRational){0, 1});
-	out_stream->duration = av_rescale_q(in_stream->duration, in_stream->time_base, out_stream->time_base);
-	out_stream->disposition = in_stream->disposition;
-	out_stream->avg_frame_rate = in_stream->avg_frame_rate;
-	out_stream->r_frame_rate = in_stream->r_frame_rate;
 	return out_stream;
 }
 
