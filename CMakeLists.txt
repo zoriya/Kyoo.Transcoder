@@ -20,10 +20,8 @@ target_link_libraries(transcoder
 	${CMAKE_SOURCE_DIR}/ffmpeg/libavformat/libavformat.a
 	${CMAKE_SOURCE_DIR}/ffmpeg/libavcodec/libavcodec.a
 	${CMAKE_SOURCE_DIR}/ffmpeg/libavutil/libavutil.a
-	${CMAKE_SOURCE_DIR}/ffmpeg/libavdevice/libavdevice.a
-	${CMAKE_SOURCE_DIR}/ffmpeg/libswresample/libswresample.a
 )
-target_link_libraries(transcoder m bz2 va-drm va-x11 lzma vdpau)
+target_link_libraries(transcoder m)
 
 if(WIN32)
 	target_link_libraries(transcoder wsock32 ws2_32)
@@ -35,7 +33,10 @@ include(ExternalProject)
 ExternalProject_Add(FFMPEG
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/ffmpeg
 	BUILD_IN_SOURCE 1
-	CONFIGURE_COMMAND ./configure --pkg-config-flags=--static --disable-shared --enable-static --disable-zlib --disable-iconv --disable-asm --disable-ffplay --disable-ffprobe
+	CONFIGURE_COMMAND ./configure --pkg-config-flags=--static --disable-shared --enable-static
+       		--disable-zlib --disable-iconv --disable-asm
+		--disable-programs --disable-doc
+		--disable-avdevice --disable-swresample --disable-swscale --disable-postproc --disable-network
 	BUILD_COMMAND make
 	INSTALL_COMMAND cmake -E echo "Skipping install step."
 )
