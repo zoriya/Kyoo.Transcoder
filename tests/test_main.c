@@ -23,6 +23,14 @@ const char *type_tostring(type t)
 	}
 }
 
+void av_dic_dump(AVDictionary *dic)
+{
+	AVDictionaryEntry *entry = NULL;
+
+	while ((entry = av_dict_get(dic, "", entry, AV_DICT_IGNORE_SUFFIX)))
+		printf("%s: %s\n", entry->key, entry->value);
+}
+
 
 int main(int argc, char **argv)
 {

@@ -45,7 +45,7 @@ void write_to_outputs(AVFormatContext **output_list, AVFormatContext *in_ctx)
 	}
 }
 
-bool list_empty(void **list, int count)
+bool list_empty(void **list, unsigned count)
 {
 	for (int i = 0; i < count; i++)
 		if (list[i])
@@ -69,7 +69,11 @@ stream parse_stream(AVStream *stream, type stream_type, const char *path)
 	};
 }
 
-stream *extract_infos(const char *path, const char *out_path, unsigned *stream_count, unsigned *track_count)
+stream *extract_infos(const char *path,
+					  const char *out_path,
+					  unsigned *stream_count,
+					  unsigned *track_count,
+					  bool reextract)
 {
 	AVFormatContext *ctx = NULL;
 	AVFormatContext **output_list;
@@ -92,9 +96,9 @@ stream *extract_infos(const char *path, const char *out_path, unsigned *stream_c
 				*track_count += 1;
 				streams[i] = parse_stream(stream, stream_type, path);
 				if (stream_type == subtitle)
-					extract_track(&streams[i], out_path, stream, ctx, &output_list[i]);
-				if (stream_type == font)
-					extract_font(&streams[i], out_path, stream);
+					extract_track(&streams[i], out_path, stream, ctx, &output_list[i], reextract);
+				if (stream_type == attachment)
+					extract_attachment(&streams[i], out_path, stream);
 			}
 		}
 	}

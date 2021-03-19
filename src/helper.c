@@ -67,9 +67,7 @@ type type_fromffmpeg(AVStream *stream)
 	case AVMEDIA_TYPE_SUBTITLE:
 		return subtitle;
 	case AVMEDIA_TYPE_ATTACHMENT:
-		if (!strcasecmp(avcodec_get_name(stream->codecpar->codec_id), "ttf"))
-			return font;
-		return none;
+		return attachment;
 	default:
 		return none;
 	}

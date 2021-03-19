@@ -40,7 +40,7 @@ char *path_getfolder(const char *path)
 char *path_getfilename(const char *path)
 {
 	const char *name = strrchr(path, '/') ? strrchr(path, '/') + 1 : path;
-	int len = strrchr(path, '.') ? strrchr(path, '.') - name : 1024;
+	long len = strrchr(path, '.') ? strrchr(path, '.') - name : 1024;
 
 	return strndup(name, len);
 }
@@ -74,4 +74,20 @@ int path_mkdir(const char *path, int mode)
 			return 0;
 	}
 	return ret;
+}
+
+int path_mkdir_p(char *path, int mode)
+{
+	char *ptr = path;
+	int ret;
+
+	while ((ptr = strchr(ptr, '/'))) {
+		*ptr = '\0';
+		ret = path_mkdir(path, mode);
+		if (ret != 0)
+			return ret;
+		*ptr = '/';
+		ptr++;
+	}
+	return 0;
 }

@@ -16,7 +16,7 @@ typedef enum
 	video = 1,
 	audio = 2,
 	subtitle = 3,
-	font = 4
+	attachment = 4
 } type;
 
 typedef struct stream
@@ -34,6 +34,7 @@ void extract_track(stream *track,
                    const char *out_path,
                    AVStream *stream,
                    AVFormatContext *in_ctx,
-                   AVFormatContext **out_ctx);
-void extract_font(stream *font, const char *out_path, AVStream *stream);
+                   AVFormatContext **out_ctx,
+                   bool reextract);
+void extract_attachment(stream *font, const char *out_path, AVStream *stream);
 void extract_chapters(AVFormatContext *ctx, const char *out_path);

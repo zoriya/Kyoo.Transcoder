@@ -11,23 +11,14 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-// @return -2 on error, -1 if track has alreaady been extracted, 0 on success.
+// @return -2 on error, -1 if track has already been extracted, 0 on success.
 int create_out_path(stream *track, const char *out_path, int track_id)
 {
 	char *folder_path;
-	char *tmp;
 
-	asprintf(&folder_path, "%s/Subtitles/%s", out_path, track->language ? track->language : "und");
-	if (!folder_path)
+	asprintf(&folder_path, "%s/Extra/Subtitles/%s", out_path, track->language ? track->language : "und");
+	if (path_mkdir_p(folder_path, 0775))
 		return -2;
-	tmp = strrchr(folder_path, '/');
-	*tmp = '\0';
-	if (path_mkdir(folder_path, 0733) < 0)
-		return free(folder_path), -2;
-	*tmp = '/';
-	if (path_mkdir(folder_path, 0733) < 0)
-		return free(folder_path), -2;
-
 	char *extension = get_extension_from_codec(track->codec);
 	char *file_name = path_getfilename(track->path);
 
@@ -52,6 +43,7 @@ int create_out_path(stream *track, const char *out_path, int track_id)
 	free(file_name);
 	if (!track->path)
 		return -2;
+	// TODO return 0 if the file has a size of 0.
 	return access(track->path, F_OK) == 0 ? -1 : 0;
 }
 
@@ -72,7 +64,7 @@ int extract_stream(AVFormatContext **out_ctx, stream *s, AVFormatContext *int_ct
 	if (*out_ctx && !((*out_ctx)->flags & AVFMT_NOFILE))
 		avio_closep(&(*out_ctx)->pb);
 	avformat_free_context(*out_ctx);
-	fprintf(stderr, "An error occured, cleaning up th output context for the %s stream.\n", s->language);
+	fprintf(stderr, "An error occurred, cleaning up th output context for the %s stream.\n", s->language);
 	return -1;
 }
 
@@ -80,14 +72,15 @@ void extract_track(stream *track,
                    const char *out_path,
                    AVStream *stream,
                    AVFormatContext *in_ctx,
-                   AVFormatContext **out_ctx)
+                   AVFormatContext **out_ctx,
+                   bool reextract)
 {
-	if (create_out_path(track, out_path, stream->id) != 0)
-		return;
-	extract_stream(out_ctx, track, in_ctx, stream);
+	int ret = create_out_path(track, out_path, stream->id);
+	if (ret == 0 || (reextract && ret == -1))
+		extract_stream(out_ctx, track, in_ctx, stream);
 }
 
-void extract_font(stream *font, const char *out_path, AVStream *stream)
+void extract_attachment(stream *font, const char *out_path, AVStream *stream)
 {
 	AVDictionaryEntry *filename = av_dict_get(stream->metadata, "filename", NULL, 0);
 
@@ -98,17 +91,17 @@ void extract_font(stream *font, const char *out_path, AVStream *stream)
 	if (!font->path)
 		return;
 	strcpy(font->path, out_path);
-	strcat(font->path, "/Subtitles/fonts/");
+	strcat(font->path, "/Extra/Attachments/");
 	if (path_mkdir(font->path, 0733) < 0)
 		return free(font->path);
 	strcat(font->path, filename->value);
-	int count = strchr(filename->value, '.') - filename->value;
+	long count = strchr(filename->value, '.') - filename->value;
 	if (count > 0)
 		font->title = strndup(filename->value, count);
 
 	int fd = open(font->path, O_WRONLY | O_CREAT, 0644);
 	if (fd == -1)
-		return perror("Kyoo couldn't extract a subtitle's font");
+		return perror("Kyoo couldn't extract an attachment.");
 	write(fd, stream->codecpar->extradata, stream->codecpar->extradata_size);
 	close(fd);
 }
@@ -125,7 +118,7 @@ void extract_chapters(AVFormatContext *ctx, const char *out_path)
 	if (!path)
 		return;
 	strcpy(path, out_path);
-	strcat(path, "/Chapters/");
+	strcat(path, "/Extra/Chapters/");
 	if (path_mkdir(path, 0733) < 0)
 		return;
 	strcat(path, filename);
