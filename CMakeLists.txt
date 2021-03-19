@@ -16,12 +16,13 @@ add_library(transcoder SHARED
 	src/destroyer.c)
 set_property(TARGET transcoder PROPERTY C_STANDARD 11)
 
-target_link_libraries(transcoder
-	${CMAKE_SOURCE_DIR}/ffmpeg/libavformat/libavformat.a
-	${CMAKE_SOURCE_DIR}/ffmpeg/libavcodec/libavcodec.a
-	${CMAKE_SOURCE_DIR}/ffmpeg/libavutil/libavutil.a
+target_link_libraries(transcoder avformat avcodec avutil)
+target_link_directories(transcoder PRIVATE
+	${CMAKE_SOURCE_DIR}/ffmpeg/libavformat
+	${CMAKE_SOURCE_DIR}/ffmpeg/libavcodec
+	${CMAKE_SOURCE_DIR}/ffmpeg/libavutil
 )
-target_link_libraries(transcoder m)
+target_link_libraries(transcoder m pthread)
 
 if(WIN32)
 	target_link_libraries(transcoder wsock32 ws2_32)
@@ -33,11 +34,13 @@ include(ExternalProject)
 ExternalProject_Add(FFMPEG
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/ffmpeg
 	BUILD_IN_SOURCE 1
-	CONFIGURE_COMMAND ./configure --pkg-config-flags=--static --disable-shared --enable-static
-       		--disable-zlib --disable-iconv --disable-asm
-		--disable-programs --disable-doc
-		--disable-avdevice --disable-swresample --disable-swscale --disable-postproc --disable-network
+	CONFIGURE_COMMAND ./configure --disable-shared --enable-static --enable-pic
+            --disable-debug --enable-gpl --enable-version3 --disable-asm
+		    --disable-programs --disable-doc --disable-autodetect
+		    --disable-avdevice --disable-swresample --disable-swscale --disable-postproc --disable-network
 	BUILD_COMMAND make
 	INSTALL_COMMAND cmake -E echo "Skipping install step."
 )
 add_dependencies(transcoder FFMPEG)
+set_property(TARGET transcoder PROPERTY POSITION_INDEPENDENT_CODE ON)
+

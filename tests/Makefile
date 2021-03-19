@@ -10,7 +10,7 @@ INCLUDE = -I ../include
 
 CFLAGS = $(INCLUDE) -Wall -Wextra -Wshadow -g
 
-LDFLAGS = -L ../cmake-build-debug -ltranscoder
+LDFLAGS = -L ../cmake-build-debug -ltranscoder -lpthread
 
 NAME = ts
 
