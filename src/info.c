@@ -92,14 +92,14 @@ stream *extract_infos(const char *path,
 			AVStream *stream = ctx->streams[i];
 			type stream_type = type_fromffmpeg(stream);
 
-			if (stream_type != none) {
-				*track_count += 1;
-				streams[i] = parse_stream(stream, stream_type, path);
-				if (stream_type == subtitle)
-					extract_track(&streams[i], out_path, stream, ctx, &output_list[i], reextract);
-				if (stream_type == attachment)
-					extract_attachment(&streams[i], out_path, stream);
-			}
+			if (stream_type == none)
+				continue;
+			*track_count += 1;
+			streams[i] = parse_stream(stream, stream_type, path);
+			if (stream_type == subtitle)
+				extract_track(&streams[i], out_path, stream, ctx, &output_list[i], reextract);
+			if (stream_type == attachment)
+				extract_attachment(&streams[i], out_path, stream);
 		}
 	}
 	if (!list_empty((void **)output_list, ctx->nb_streams))

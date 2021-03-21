@@ -10,13 +10,14 @@
 #include <libavformat/avformat.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <sys/stat.h>
 
 // @return -2 on error, -1 if track has already been extracted, 0 on success.
 int create_out_path(stream *track, const char *out_path, int track_id)
 {
 	char *folder_path;
 
-	asprintf(&folder_path, "%s/Extra/Subtitles/%s", out_path, track->language ? track->language : "und");
+	asprintf(&folder_path, "%s/Subtitles/%s", out_path, track->language ? track->language : "und");
 	if (path_mkdir_p(folder_path, 0775))
 		return -2;
 	char *extension = get_extension_from_codec(track->codec);
@@ -43,8 +44,8 @@ int create_out_path(stream *track, const char *out_path, int track_id)
 	free(file_name);
 	if (!track->path)
 		return -2;
-	// TODO return 0 if the file has a size of 0.
-	return access(track->path, F_OK) == 0 ? -1 : 0;
+	struct stat s;
+	return stat(track->path, &s) == 0 && s.st_size > 0;
 }
 
 int extract_stream(AVFormatContext **out_ctx, stream *s, AVFormatContext *int_ctx, AVStream *in_stream)
@@ -64,7 +65,8 @@ int extract_stream(AVFormatContext **out_ctx, stream *s, AVFormatContext *int_ct
 	if (*out_ctx && !((*out_ctx)->flags & AVFMT_NOFILE))
 		avio_closep(&(*out_ctx)->pb);
 	avformat_free_context(*out_ctx);
-	fprintf(stderr, "An error occurred, cleaning up th output context for the %s stream.\n", s->language);
+	fprintf(stderr, "An error occurred, cleaning up the output context for the %s stream.\n", s->language);
+	*out_ctx = NULL;
 	return -1;
 }
 
@@ -91,8 +93,8 @@ void extract_attachment(stream *font, const char *out_path, AVStream *stream)
 	if (!font->path)
 		return;
 	strcpy(font->path, out_path);
-	strcat(font->path, "/Extra/Attachments/");
-	if (path_mkdir(font->path, 0733) < 0)
+	strcat(font->path, "/Attachments/");
+	if (path_mkdir(font->path, 0755) < 0)
 		return free(font->path);
 	strcat(font->path, filename->value);
 	long count = strchr(filename->value, '.') - filename->value;
@@ -118,8 +120,8 @@ void extract_chapters(AVFormatContext *ctx, const char *out_path)
 	if (!path)
 		return;
 	strcpy(path, out_path);
-	strcat(path, "/Extra/Chapters/");
-	if (path_mkdir(path, 0733) < 0)
+	strcat(path, "/Chapters/");
+	if (path_mkdir(path, 0755) < 0)
 		return;
 	strcat(path, filename);
 	tmp = strrchr(path, '.');

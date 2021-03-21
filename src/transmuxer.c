@@ -47,7 +47,7 @@ static AVDictionary *create_options_context(const char *out_path)
 	int folder_index = strrchr(out_path, '/') - out_path;
 
 	sprintf(seg_path, "%.*s/segments/", folder_index, out_path);
-	if (path_mkdir(seg_path, 0733) < 0) {
+	if (path_mkdir(seg_path, 0755) < 0) {
 		fprintf(stderr, "Error: Couldn't create segment output folder. "
 			"Part of the output path does not exist or you don't have write rights.\n");
 		return NULL;

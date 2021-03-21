@@ -89,5 +89,5 @@ int path_mkdir_p(char *path, int mode)
 		*ptr = '/';
 		ptr++;
 	}
-	return 0;
+	return path_mkdir(path, mode);
 }
