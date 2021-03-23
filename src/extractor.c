@@ -12,7 +12,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 
-// @return -2 on error, -1 if track has already been extracted, 0 on success.
+// @return -1 on error, 1 if track has already been extracted, 0 if the track does not exist.
 int create_out_path(stream *track, const char *out_path, int track_id)
 {
 	char *folder_path;
@@ -78,7 +78,7 @@ void extract_track(stream *track,
                    bool reextract)
 {
 	int ret = create_out_path(track, out_path, stream->id);
-	if (ret == 0 || (reextract && ret == -1))
+	if (ret == 0 || (reextract && ret == 1))
 		extract_stream(out_ctx, track, in_ctx, stream);
 }
 
