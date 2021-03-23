@@ -114,14 +114,14 @@ void extract_chapters(AVFormatContext *ctx, const char *out_path)
 		return;
 
 	const char *filename = strrchr(ctx->url, '/');
-	char *path = malloc((strlen(filename) + strlen(out_path) + 14) * sizeof(char));
+	char *path = malloc((strlen(filename) + strlen(out_path) + 15) * sizeof(char));
 	char *tmp;
 
 	if (!path)
 		return;
 	strcpy(path, out_path);
 	strcat(path, "/Chapters/");
-	if (path_mkdir(path, 0755) < 0)
+	if (path_mkdir_p(path, 0755) < 0)
 		return;
 	strcat(path, filename);
 	tmp = strrchr(path, '.');
