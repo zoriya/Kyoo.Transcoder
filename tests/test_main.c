@@ -39,11 +39,11 @@ int main(int argc, char **argv)
 	float playable_duration;
 	stream *streams;
 
-	if (argc == 3 && !strcmp(argv[1], "info")) {
-		streams = extract_infos(argv[2], "./Extra", &stream_count, &track_count, true);
+	if ((argc == 3 || argc == 4) && !strcmp(argv[1], "info")) {
+		streams = extract_infos(argv[2], argv[3] ? argv[3] : "./Extra", &stream_count, &track_count, true);
 		puts("Info extracted:");
 		for (unsigned i = 0; i < track_count; i++) {
-			printf("%8s: %6s - %3s (%5s), D%d, F%d at %s\n",
+			printf("%10s: %6s - %3s (%5s), D%d, F%d at %s\n",
 				type_tostring(streams[i].type),
 				streams[i].title,
 				streams[i].language != NULL ? streams[i].language : "X",

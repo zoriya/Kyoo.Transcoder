@@ -78,7 +78,7 @@ int path_mkdir(const char *path, int mode)
 
 int path_mkdir_p(char *path, int mode)
 {
-	char *ptr = path;
+	char *ptr = path + 1; // Skipping the first '/'
 	int ret;
 
 	while ((ptr = strchr(ptr, '/'))) {
