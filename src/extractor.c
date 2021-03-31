@@ -6,7 +6,7 @@
 #include "path_helper.h"
 #include "stream.h"
 #include "helper.h"
-#include <malloc.h>
+#include <stdlib.h>
 #include <libavformat/avformat.h>
 #include <unistd.h>
 #include <fcntl.h>

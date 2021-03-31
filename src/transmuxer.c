@@ -6,7 +6,7 @@
 #include "helper.h"
 #include "compatibility.h"
 #include "path_helper.h"
-#include <malloc.h>
+#include <stdlib.h>
 
 static bool should_copy_to_transmuxed(enum AVMediaType codec_type)
 {
