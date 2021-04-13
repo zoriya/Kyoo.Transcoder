@@ -13,7 +13,8 @@ add_library(transcoder SHARED
 	src/extractor.c
 	src/transmuxer.c
 	src/path_helper.c
-	src/destroyer.c)
+	src/destroyer.c
+)
 set_property(TARGET transcoder PROPERTY C_STANDARD 11)
 
 target_link_libraries(transcoder avformat avcodec avutil)
@@ -35,9 +36,9 @@ ExternalProject_Add(FFMPEG
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/ffmpeg
 	BUILD_IN_SOURCE 1
 	CONFIGURE_COMMAND ./configure --disable-shared --enable-static --enable-pic
-            --disable-debug --enable-gpl --enable-version3 --disable-asm
-		    --disable-programs --disable-doc --disable-autodetect
-		    --disable-avdevice --disable-swresample --disable-swscale --disable-postproc --disable-network
+	                  --disable-debug --enable-gpl --enable-version3 --disable-asm
+	                  --disable-programs --disable-doc --disable-autodetect
+	                  --disable-avdevice --disable-swresample --disable-swscale --disable-postproc --disable-network
 	BUILD_COMMAND make
 	INSTALL_COMMAND cmake -E echo "Skipping install step."
 )
