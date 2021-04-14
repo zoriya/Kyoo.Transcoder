@@ -12,6 +12,7 @@ add_library(transcoder SHARED
 	src/transmuxer.c
 	src/path_helper.c
 	src/destroyer.c
+    src/compatibility.c
 )
 set_property(TARGET transcoder PROPERTY C_STANDARD 11)
 set_property(TARGET transcoder PROPERTY POSITION_INDEPENDENT_CODE ON)

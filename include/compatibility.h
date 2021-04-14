@@ -7,9 +7,11 @@
 #define _GNU_SOURCE // For asprintf
 #include <stdio.h>
 
-#ifdef __WIN32__
+#if defined(_WIN32) || defined(WIN32)
 	#define kmkdir(dir, mode) mkdir(dir)
 	#include <io.h>
+	#include <stddef.h>
+	char *strndup(const char *str, size_t count);
 #else
 	#define kmkdir(dir, mode) mkdir(dir, mode)
 	#include <unistd.h>
