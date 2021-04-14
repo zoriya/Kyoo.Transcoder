@@ -80,7 +80,7 @@ stream *extract_infos(const char *path,
 	stream *streams;
 
 	if (open_input_context(&ctx, path) != 0)
-		return free(streams), NULL;
+		return NULL;
 	*stream_count = ctx->nb_streams;
 	*track_count = 0;
 	streams = calloc(ctx->nb_streams, sizeof(stream));
@@ -105,8 +105,10 @@ stream *extract_infos(const char *path,
 	if (!list_empty((void **)output_list, ctx->nb_streams))
 		write_to_outputs(output_list, ctx);
 	avformat_close_input(&ctx);
-	if (!output_list)
-		return free(streams), NULL;
+	if (!output_list) {
+		free(streams);
+		return NULL;
+	}
 	free(output_list);
 	return streams;
 }

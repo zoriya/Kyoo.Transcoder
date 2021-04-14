@@ -9,8 +9,10 @@
 
 #ifdef __WIN32__
 	#define kmkdir(dir, mode) mkdir(dir)
+	#include <io.h>
 #else
 	#define kmkdir(dir, mode) mkdir(dir, mode)
+	#include <unistd.h>
 #endif
 
 #ifdef __MINGW32__

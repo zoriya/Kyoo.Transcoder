@@ -8,7 +8,6 @@
 #include "helper.h"
 #include <stdlib.h>
 #include <libavformat/avformat.h>
-#include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 
@@ -94,16 +93,20 @@ void extract_attachment(stream *font, const char *out_path, AVStream *stream)
 		return;
 	strcpy(font->path, out_path);
 	strcat(font->path, "/Attachments/");
-	if (path_mkdir(font->path, 0755) < 0)
-		return free(font->path);
+	if (path_mkdir(font->path, 0755) < 0) {
+		free(font->path);
+		return;
+	}
 	strcat(font->path, filename->value);
-	long count = strchr(filename->value, '.') - filename->value;
+	unsigned long count = strchr(filename->value, '.') - filename->value;
 	if (count > 0)
 		font->title = strndup(filename->value, count);
 
 	int fd = open(font->path, O_WRONLY | O_CREAT, 0644);
-	if (fd == -1)
-		return perror("Kyoo couldn't extract an attachment.");
+	if (fd == -1) {
+		perror("Kyoo couldn't extract an attachment.");
+		return;
+	}
 	write(fd, stream->codecpar->extradata, stream->codecpar->extradata_size);
 	close(fd);
 }

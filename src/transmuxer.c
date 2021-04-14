@@ -43,9 +43,12 @@ static int *prepare_streammap(AVFormatContext *in_ctx, AVFormatContext *out_ctx)
 static AVDictionary *create_options_context(const char *out_path)
 {
 	AVDictionary *options = NULL;
-	char seg_path[strlen(out_path) + 22];
-	int folder_index = strrchr(out_path, '/') - out_path;
+	char *seg_path = malloc(sizeof(char) * strlen(out_path) + 22);
+	int folder_index;
 
+	if (!seg_path)
+		return NULL;
+	folder_index = (int)(strrchr(out_path, '/') - out_path);
 	sprintf(seg_path, "%.*s/segments/", folder_index, out_path);
 	if (path_mkdir(seg_path, 0755) < 0) {
 		fprintf(stderr, "Error: Couldn't create segment output folder. "
@@ -53,7 +56,7 @@ static AVDictionary *create_options_context(const char *out_path)
 		return NULL;
 	}
 	strcat(seg_path, "%v-%03d.ts");
-	av_dict_set(&options, "hls_segment_filename", seg_path, 0);
+	av_dict_set(&options, "hls_segment_filename", seg_path, AV_DICT_DONT_STRDUP_VAL);
 	av_dict_set(&options, "hls_base_url", "segments/", 0);
 	av_dict_set(&options, "hls_list_size", "0", 0);
 	av_dict_set(&options, "streaming", "1", 0);
