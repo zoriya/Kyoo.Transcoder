@@ -132,7 +132,7 @@ void extract_chapters(AVFormatContext *ctx, const char *out_path)
 		*tmp = '\0';
 	strcat(path, ".txt");
 
-	int fd = open(path, O_WRONLY | O_CREAT, 0644);
+	FILE *file = fopen(path, "w");
 
 	for (unsigned i = 0; i < ctx->nb_chapters; i++) {
 		AVDictionaryEntry *name = av_dict_get(ctx->chapters[i]->metadata, "title", NULL, 0);
@@ -143,8 +143,8 @@ void extract_chapters(AVFormatContext *ctx, const char *out_path)
 			continue;
 		double start = chapter->start * av_q2d(chapter->time_base);
 		double end = chapter->end * av_q2d(chapter->time_base);
-		dprintf(fd, "%f %f %s\n", start, end, name->value);
+		fprintf(file, "%f %f %s\n", start, end, name->value);
 	}
-	close(fd);
+	fclose(file);
 	free(path);
 }

@@ -18,10 +18,11 @@ set_property(TARGET transcoder PROPERTY C_STANDARD 11)
 set_property(TARGET transcoder PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 target_link_libraries(transcoder avformat avcodec avutil)
-target_link_libraries(transcoder m pthread)
 
 if(WIN32)
 	target_link_libraries(transcoder wsock32 ws2_32)
 	target_link_libraries(transcoder Secur32 Secur32)
 	target_link_libraries(transcoder Bcrypt Bcrypt)
+else()
+	target_link_libraries(transcoder m pthread)
 endif()

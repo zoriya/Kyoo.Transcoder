@@ -8,13 +8,20 @@
 #include <stdio.h>
 
 #if defined(_WIN32) || defined(WIN32)
-	#define kmkdir(dir, mode) mkdir(dir)
 	#include <io.h>
 	#include <stddef.h>
+	#include <stdarg.h>
+
 	char *strndup(const char *str, size_t count);
+	int asprintf(char **buffer, const char *fmt, ...);
+	int vasprintf(char **buffer, const char *fmt, va_list args);
+
+	#define kmkdir(dir, mode) mkdir(dir)
+	#define S_ISDIR(x) (x & S_IFDIR)
 #else
-	#define kmkdir(dir, mode) mkdir(dir, mode)
 	#include <unistd.h>
+
+	#define kmkdir(dir, mode) mkdir(dir, mode)
 #endif
 
 #ifdef __MINGW32__
