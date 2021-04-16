@@ -4,10 +4,13 @@
 
 #pragma once
 
-#define _GNU_SOURCE // For asprintf
-#include <stdio.h>
+#define _GNU_SOURCE
 
 #if defined(_WIN32) || defined(WIN32)
+	#define _CRT_SECURE_NO_WARNINGS
+	#define _CRT_NONSTDC_NO_DEPRECATE
+
+
 	#include <io.h>
 	#include <stddef.h>
 	#include <stdarg.h>
@@ -24,6 +27,4 @@
 	#define kmkdir(dir, mode) mkdir(dir, mode)
 #endif
 
-#ifdef __MINGW32__
-	#define asprintf __mingw_asprintf
-#endif
+#include <stdio.h>

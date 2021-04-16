@@ -98,7 +98,7 @@ void extract_attachment(stream *font, const char *out_path, AVStream *stream)
 		return;
 	}
 	strcat(font->path, filename->value);
-	unsigned long count = strchr(filename->value, '.') - filename->value;
+	size_t count = strchr(filename->value, '.') - filename->value;
 	if (count > 0)
 		font->title = strndup(filename->value, count);
 

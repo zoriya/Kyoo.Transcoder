@@ -47,7 +47,7 @@ void write_to_outputs(AVFormatContext **output_list, AVFormatContext *in_ctx)
 
 bool list_empty(void **list, unsigned count)
 {
-	for (int i = 0; i < count; i++)
+	for (unsigned i = 0; i < count; i++)
 		if (list[i])
 			return false;
 	return true;

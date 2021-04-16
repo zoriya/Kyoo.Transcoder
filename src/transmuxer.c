@@ -63,7 +63,10 @@ static AVDictionary *create_options_context(const char *out_path)
 	return options;
 }
 
-static void write_to_output(AVFormatContext *in_ctx, AVFormatContext *out_ctx, int *stream_map, float *playable_duration)
+static void write_to_output(AVFormatContext *in_ctx,
+							AVFormatContext *out_ctx,
+							int *stream_map,
+							float *playable_duration)
 {
 	AVPacket pkt;
 	AVStream *istream;
@@ -111,11 +114,11 @@ int transmux(const char *path, const char *out_path, float *playable_duration)
 	*playable_duration = 0;
 	av_log_set_level(AV_LOG_LEVEL);
 	if (open_input_context(&in_ctx, path) != 0) {
-		fprintf(stderr, "Error: Coudln't open the input file.\n");
+		fprintf(stderr, "Error: Could not open the input file.\n");
 		return -1;
 	}
 	if (avformat_alloc_output_context2(&out_ctx, NULL, NULL, out_path) < 0) {
-		fprintf(stderr, "Error: Couldn't create an output file.\n");
+		fprintf(stderr, "Error: Could not create an output file.\n");
 		avformat_close_input(&in_ctx);
 		return -1;
 	}
