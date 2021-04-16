@@ -2,11 +2,11 @@
 // Created by anonymus-raccoon on 12/29/19.
 //
 
+#include "compatibility.h"
 #include <string.h>
 #include <stdio.h>
 #include <errno.h>
 #include <sys/stat.h>
-#include "compatibility.h"
 
 char *strrnchr(const char *str, int c, int occ_to_skip)
 {
@@ -40,7 +40,7 @@ char *path_getfolder(const char *path)
 char *path_getfilename(const char *path)
 {
 	const char *name = strrchr(path, '/') ? strrchr(path, '/') + 1 : path;
-	long len = strrchr(path, '.') ? strrchr(path, '.') - name : 1024;
+	size_t len = strrchr(path, '.') ? strrchr(path, '.') - name : 1024;
 
 	return strndup(name, len);
 }

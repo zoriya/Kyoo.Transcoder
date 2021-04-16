@@ -2,9 +2,9 @@
 // Created by Anonymus Raccoon on 20/12/2019.
 //
 
+#include "compatibility.h"
 #include "transcoder.h"
 #include "helper.h"
-#include "compatibility.h"
 #include "path_helper.h"
 #include <stdlib.h>
 
@@ -71,7 +71,7 @@ static void write_to_output(AVFormatContext *in_ctx,
 	AVPacket pkt;
 	AVStream *istream;
 	AVStream *ostream;
-	int index;
+	unsigned index;
 
 	while (av_read_frame(in_ctx, &pkt) == 0) {
 		index = pkt.stream_index;

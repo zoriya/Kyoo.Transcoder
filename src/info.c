@@ -2,6 +2,7 @@
 // Created by Anonymus Raccoon on 20/12/2019.
 //
 
+#include <compatibility.h>
 #include <stdio.h>
 #include "stream.h"
 #include "helper.h"

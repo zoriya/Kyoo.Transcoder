@@ -34,7 +34,6 @@ int asprintf(char **buffer, const char *fmt, ...)
 int vasprintf(char **buffer, const char *fmt, va_list args)
 {
 	va_list copy;
-	char *ret;
 	int len;
 
 	va_copy(copy, args);

@@ -12,6 +12,7 @@
 
 
 	#include <io.h>
+	#include <direct.h>
 	#include <stddef.h>
 	#include <stdarg.h>
 
