@@ -4,10 +4,11 @@
 
 #include <compatibility.h>
 #include <stdio.h>
+#include "export.h"
 #include "stream.h"
 #include "helper.h"
 
-int init()
+API int init()
 {
 	puts("Kyoo's transcoder initiated.");
 	return sizeof(stream);
@@ -70,11 +71,11 @@ stream parse_stream(AVStream *stream, type stream_type, const char *path)
 	};
 }
 
-stream *extract_infos(const char *path,
-					  const char *out_path,
-					  unsigned *stream_count,
-					  unsigned *track_count,
-					  bool reextract)
+API stream *extract_infos(const char *path,
+                          const char *out_path,
+                          unsigned *stream_count,
+                          unsigned *track_count,
+                          bool reextract)
 {
 	AVFormatContext *ctx = NULL;
 	AVFormatContext **output_list;

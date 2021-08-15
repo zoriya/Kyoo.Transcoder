@@ -3,6 +3,7 @@
 //
 
 #include "compatibility.h"
+#include "export.h"
 #include "transcoder.h"
 #include "helper.h"
 #include "path_helper.h"
@@ -104,7 +105,7 @@ static void destroy_context(AVFormatContext *in_ctx, AVFormatContext *out_ctx, A
 		free(stream_map);
 }
 
-int transmux(const char *path, const char *out_path, float *playable_duration)
+API int transmux(const char *path, const char *out_path, float *playable_duration)
 {
 	AVFormatContext *in_ctx = NULL;
 	AVFormatContext *out_ctx = NULL;
