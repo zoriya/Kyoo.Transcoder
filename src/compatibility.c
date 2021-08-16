@@ -37,12 +37,12 @@ int vasprintf(char **buffer, const char *fmt, va_list args)
 	int len;
 
 	va_copy(copy, args);
-	len = vsprintf(NULL, fmt, args);
+	len = _vscprintf(fmt, args);
 	va_end(copy);
 
 	*buffer = malloc(sizeof(char) * (len + 1));
 	if (!*buffer)
-		return 0;
+		return -1;
 	vsprintf(*buffer, fmt, args);
 	return len;
 }

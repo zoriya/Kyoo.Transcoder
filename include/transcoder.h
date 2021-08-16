@@ -22,3 +22,4 @@ API stream *extract_infos(const char *path,
 API void destroy_stream(stream *s);
 
 API void free_streams(stream *streamsPtr, unsigned count);
+
