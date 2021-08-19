@@ -1,3 +1,7 @@
+//
+// Created by Zoe Roux on 2019-12-20.
+//
+
 #include <stdio.h>
 #include "helper.h"
 #include "stream.h"
@@ -5,11 +9,11 @@
 int open_input_context(AVFormatContext **in_ctx, const char *path)
 {
 	if (avformat_open_input(in_ctx, path, NULL, NULL)) {
-		fprintf(stderr, "Error: Can't open the file at %s.\n", path);
+		av_log(NULL, AV_LOG_ERROR, "Can't open the file at %s.\n", path);
 		return 1;
 	}
 	if (avformat_find_stream_info(*in_ctx, NULL) < 0) {
-		fprintf(stderr,"Error: Could't find streams informations for the file at %s.\n", path);
+		av_log(NULL, AV_LOG_ERROR, "Could not find streams information for the file at %s.\n", path);
 		return 1;
 	}
 	return 0;
@@ -20,11 +24,11 @@ AVStream *copy_stream_to_output(AVFormatContext *out_ctx, AVStream *in_stream)
 	AVStream *out_stream = avformat_new_stream(out_ctx, NULL);
 
 	if (out_stream == NULL) {
-		fprintf(stderr,"Error: Couldn't create stream.\n");
+		av_log(NULL, AV_LOG_ERROR, "Couldn't create stream.\n");
 		return NULL;
 	}
 	if (avcodec_parameters_copy(out_stream->codecpar, in_stream->codecpar) < 0) {
-		fprintf(stderr, "Error: Couldn't copy parameters to the output file.\n");
+		av_log(NULL, AV_LOG_ERROR, "Could not copy parameters to the output file.\n");
 		return NULL;
 	}
 	out_stream->codecpar->codec_tag = 0;
@@ -35,14 +39,15 @@ int open_output_file_for_write(AVFormatContext *out_ctx, const char *out_path, A
 {
 	if (!(out_ctx->oformat->flags & AVFMT_NOFILE)) {
 		if (avio_open(&out_ctx->pb, out_path, AVIO_FLAG_WRITE) < 0) {
-			fprintf(stderr, "Error: Couldn't open file at %s.\n", out_path);
+			av_log(NULL, AV_LOG_ERROR, "Could not open file for write at %s.\n", out_path);
 			return 1;
 		}
 	}
-	else
-		printf("Output flag set to AVFMT_NOFILE.\n");
+
 	if (avformat_write_header(out_ctx, options) < 0) {
-		fprintf(stderr, "Error: Couldn't write headers to file at %s.\n", out_path);
+		if (!(out_ctx->oformat->flags & AVFMT_NOFILE))
+			avio_close(out_ctx->pb);
+		av_log(NULL, AV_LOG_ERROR, "Could not write headers to file at %s.\n", out_path);
 		return 1;
 	}
 	return 0;

@@ -27,8 +27,12 @@ void av_dic_dump(AVDictionary *dic)
 {
 	AVDictionaryEntry *entry = NULL;
 
+	if (!dic)
+		return;
 	while ((entry = av_dict_get(dic, "", entry, AV_DICT_IGNORE_SUFFIX)))
 		printf("%s: %s\n", entry->key, entry->value);
+	printf("Done\n");
+	fflush(stdout);
 }
 
 
@@ -38,6 +42,9 @@ int main(int argc, char **argv)
 	unsigned track_count = 0;
 	float playable_duration;
 	stream *streams;
+
+	// Useless reference only to have the function on the binary to call it with a debugger.
+	av_dic_dump(NULL);
 
 	if ((argc == 3 || argc == 4) && !strcmp(argv[1], "info")) {
 		streams = extract_infos(argv[2], argv[3] ? argv[3] : "./Extra", &stream_count, &track_count, true);
@@ -56,7 +63,7 @@ int main(int argc, char **argv)
 		return 0;
 	}
 	else if (argc == 4 && !strcmp(argv[1], "transmux"))
-		return (transmux(argv[2], argv[3], &playable_duration));
+		return -transmux(argv[2], argv[3], &playable_duration);
 	else
 		printf("Usage:\n\
 	%s info video_path - Test info prober\n\

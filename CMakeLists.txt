@@ -28,3 +28,9 @@ if(WIN32)
 else()
 	target_link_libraries(transcoder m pthread)
 endif()
+
+add_executable(test EXCLUDE_FROM_ALL
+	tests/test_main.c
+)
+set_property(TARGET test PROPERTY C_STANDARD 11)
+target_link_libraries(test transcoder)

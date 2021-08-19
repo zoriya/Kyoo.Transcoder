@@ -31,7 +31,7 @@ void write_to_outputs(AVFormatContext **output_list, AVFormatContext *in_ctx)
 		process_packet(&pkt, in_ctx->streams[pkt.stream_index], out_ctx->streams[0]);
 		pkt.stream_index = 0;
 		if (av_interleaved_write_frame(out_ctx, &pkt) < 0)
-			fprintf(stderr, "Error while writing a packet to the output file.\n");
+			av_log(NULL, AV_LOG_ERROR, "Error while writing a packet to the output file.\n");
 		av_packet_unref(&pkt);
 	}
 

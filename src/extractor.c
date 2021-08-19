@@ -1,5 +1,5 @@
 //
-// Created by anonymus-raccoon on 10/27/20.
+// Created by Zoe Roux on 2020-10-27.
 //
 
 #include "compatibility.h"
@@ -7,7 +7,6 @@
 #include "stream.h"
 #include "helper.h"
 #include <stdlib.h>
-#include <libavformat/avformat.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 
@@ -52,7 +51,7 @@ int extract_stream(AVFormatContext **out_ctx, stream *s, AVFormatContext *int_ct
 	AVStream *out_stream = NULL;
 
 	if (avformat_alloc_output_context2(out_ctx, NULL, NULL, s->path) < 0) {
-		fprintf(stderr, "Error: Couldn't create an output file.\n");
+		av_log(NULL, AV_LOG_ERROR, "Could not create an output file.\n");
 		return -1;
 	}
 
@@ -64,7 +63,7 @@ int extract_stream(AVFormatContext **out_ctx, stream *s, AVFormatContext *int_ct
 	if (*out_ctx && !((*out_ctx)->flags & AVFMT_NOFILE))
 		avio_closep(&(*out_ctx)->pb);
 	avformat_free_context(*out_ctx);
-	fprintf(stderr, "An error occurred, cleaning up the output context for the %s stream.\n", s->language);
+	av_log(NULL, AV_LOG_ERROR, "An error occurred, cleaning up the output context for the %s stream.\n", s->language);
 	*out_ctx = NULL;
 	return -1;
 }
@@ -104,7 +103,7 @@ void extract_attachment(stream *font, const char *out_path, AVStream *stream)
 
 	int fd = open(font->path, O_WRONLY | O_CREAT, 0644);
 	if (fd == -1) {
-		perror("Kyoo couldn't extract an attachment.");
+		av_log(NULL, AV_LOG_ERROR, "Could not extract an attachment (%s).\n", strerror(errno));
 		return;
 	}
 	write(fd, stream->codecpar->extradata, stream->codecpar->extradata_size);
