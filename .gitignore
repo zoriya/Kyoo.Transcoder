@@ -1,6 +1,8 @@
 .idea/*
 cmake-build-debug/*
 build/*
+buildWin/*
+buildOSX/*
 tests/*.o
 tests/ts
 tests/*/*
