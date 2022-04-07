@@ -13,32 +13,28 @@
 // @return -1 on error, 1 if track has already been extracted, 0 if the track does not exist.
 int create_out_path(stream *track, const char *out_path, int track_id)
 {
-	char *folder_path;
-
-	asprintf(&folder_path, "%s/Subtitles/%s", out_path, track->language ? track->language : "und");
-	if (path_mkdir_p(folder_path, 0775))
-		return -2;
-	char *extension = get_extension_from_codec(track->codec);
 	char *file_name = path_getfilename(track->path);
+	char *extension = get_extension_from_codec(track->codec);
+	char identifier[20];
 
 	if (!extension || !file_name) {
-		free(folder_path);
 		free(file_name);
 		return -2;
 	}
 	free(track->path);
 
-	char identifier[8];
-	if (!track->language)
-		snprintf(identifier, 8, "%d", track_id);
-	asprintf(&track->path, "%s/%s.%s%s%s%s",
-	         folder_path,
-	         file_name,
-	         track->language ? track->language : identifier,
-	         track->is_default ? ".default" : "",
-	         track->is_forced ? ".forced" : "",
-	         extension);
-	free(folder_path);
+	if (!track->language || !strcmp(track->language, "und"))
+		snprintf(identifier, sizeof(identifier), "und-%d", track_id);
+	asprintf(
+		&track->path,
+		"%s/%s.%s%s%s%s",
+		out_path,
+		file_name,
+		track->language ? track->language : identifier,
+		track->is_default ? ".default" : "",
+		track->is_forced ? ".forced" : "",
+		extension
+	);
 	free(file_name);
 	if (!track->path)
 		return -2;

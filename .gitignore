@@ -6,3 +6,5 @@ buildOSX/*
 tests/*.o
 tests/ts
 tests/*/*
+.cache/
+compile_commands.json
